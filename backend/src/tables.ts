@@ -7,7 +7,7 @@ export const checkTables = async () => {
                 id SERIAL PRIMARY KEY NOT NULL, 
                 nome VARCHAR(50) NOT NULL, 
                 email VARCHAR(50), 
-                telefone INT
+                telefone VARCHAR(14)
             )
         `)
     } catch (exc) {
