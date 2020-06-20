@@ -65,12 +65,12 @@ const Clientes:React.FC = () => {
                 setObjSelected({});
                 break;
             case "Editar":
-                setType(type)
-                setShow(true);
                 if (selected && selected.length === 1) {
                     let cliente = clientes.find(a => a.id === selected[0]);
                     if (cliente) {
                         setObjSelected(cliente);
+                        setType(type)
+                        setShow(true);
                     } else {
                         alert("Não foi possível encontrar o cliente")
                     }
@@ -79,8 +79,18 @@ const Clientes:React.FC = () => {
                 }
                 break;
             case "Excluir":
-                setType(type)
-                setShow(true);
+                if (selected && selected.length === 1) {
+                    let cliente = clientes.find(a => a.id === selected[0]);
+                    if (cliente) {
+                        setObjSelected(cliente);
+                        setType(type)
+                        setShow(true);
+                    } else {
+                        alert("Não foi possível encontrar o cliente")
+                    }
+                } else {
+                    alert("Selecione um para editar.")
+                }
                 break;
             default:
                 break;
@@ -158,6 +168,11 @@ const Clientes:React.FC = () => {
                 setShow={setShow}
                 title={type}
                 body={
+                    type === "Excluir" ?
+                    <div>
+                        Você tem certeza que deseja excluir o cliente <b>{selectedAsCliente.nome}</b>?
+                    </div>
+                    :
                     <Form 
                         inputs={inputs}
                     />
