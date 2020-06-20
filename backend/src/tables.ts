@@ -17,7 +17,6 @@ export const checkTables = async () => {
     try {
         await pool.query(`
             CREATE TABLE IF NOT EXISTS endereco (
-                id SERIAL PRIMARY KEY NOT NULL,
                 cliente_id int NOT NULL,
                 logradouro VARCHAR(30) NOT NULL,
                 cidade VARCHAR(30) NOT NULL,
