@@ -1,8 +1,8 @@
-import pool from './connection';
+import pool from './connection'
 
 export const checkTables = async () => {
-    try {
-        await pool.query(`
+  try {
+    await pool.query(`
             CREATE TABLE IF NOT EXISTS cliente (
                 id SERIAL PRIMARY KEY NOT NULL, 
                 nome VARCHAR(50) NOT NULL, 
@@ -10,32 +10,32 @@ export const checkTables = async () => {
                 telefone VARCHAR(14)
             )
         `)
-    } catch (exc) {
-        console.log("Create table cliente exception: ", exc);
-    }
+  } catch (exc) {
+    console.log('Create table cliente exception: ', exc)
+  }
 
-    try {
-        await pool.query(`
+  try {
+    await pool.query(`
             CREATE TABLE IF NOT EXISTS endereco (
-                cliente_id int NOT NULL,
+                clienteId int NOT NULL,
                 logradouro VARCHAR(30) NOT NULL,
                 cidade VARCHAR(30) NOT NULL,
                 estado VARCHAR(30) NOT NULL,
                 bairro VARCHAR(30),
                 numero INT,
-                PRIMARY KEY (cliente_id),
-                CONSTRAINT fk_cliente_id FOREIGN KEY (cliente_id) REFERENCES cliente (id)
+                PRIMARY KEY (clienteId),
+                CONSTRAINT fk_cliente_id FOREIGN KEY (clienteId) REFERENCES cliente (id)
             )
         `)
-    } catch (exc) {
-        console.log("Create table endereco exception: ", exc);
-    }
-    
-    try {
-        await pool.query(`
+  } catch (exc) {
+    console.log('Create table endereco exception: ', exc)
+  }
+
+  try {
+    await pool.query(`
             CREATE TABLE IF NOT EXISTS carga (
                 id SERIAL PRIMARY KEY NOT NULL,
-                cliente_id int NOT NULL,
+                clienteId int NOT NULL,
                 dataEntrada VARCHAR(8),
                 dataEntrega VARCHAR(8),
                 peso VARCHAR(50),
@@ -43,28 +43,27 @@ export const checkTables = async () => {
                 altura VARCHAR(50),
                 comprimento VARCHAR(50),
                 status VARCHAR(1),
-                CONSTRAINT fk_cliente_id FOREIGN KEY (cliente_id) REFERENCES cliente (id)
+                CONSTRAINT fk_cliente_id FOREIGN KEY (clienteId) REFERENCES cliente (id)
             )
         `)
-    } catch (exc) {
-        console.log("Create table carga exception: ", exc);
-    }
-    
-    try {
-        await pool.query(`
+  } catch (exc) {
+    console.log('Create table carga exception: ', exc)
+  }
+
+  try {
+    await pool.query(`
             CREATE TABLE IF NOT EXISTS enderecoCarga (
-                carga_id int NOT NULL,
+                cargaId int NOT NULL,
                 logradouro VARCHAR(50),
                 numero INT,
                 bairro VARCHAR(50),
                 cidade VARCHAR(50),
                 estado VARCHAR(2),
-                PRIMARY KEY (carga_id),
-                CONSTRAINT fk_carga_id FOREIGN KEY (carga_id) REFERENCES carga (id)
+                PRIMARY KEY (cargaId),
+                CONSTRAINT fk_carga_id FOREIGN KEY (cargaId) REFERENCES carga (id)
             )
         `)
-    } catch (exc) {
-        console.log("Create table endereco_carga exception: ", exc);
-    }
-
+  } catch (exc) {
+    console.log('Create table endereco_carga exception: ', exc)
+  }
 }

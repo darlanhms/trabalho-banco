@@ -1,47 +1,45 @@
-import express, { Application } from 'express';
-import bodyParser from 'body-parser';
-import pgtools from 'pgtools';
+import express from 'express'
+import bodyParser from 'body-parser'
+import pgtools from 'pgtools'
 import cors from 'cors'
-import { checkTables } from './tables';
-import routes from './routes';
+import { checkTables } from './tables'
+import routes from './routes'
+import dotenv from 'dotenv'
 
-const config = require("../config.json");
-const app: Application = express();
+const app = express()
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cors());
+dotenv.config()
 
-app.get("/", (req, res) => {
-    return res.send("API rodando")
-});
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(cors())
 
-app.use("/api", routes);
+app.get('/', (req, res) => {
+  return res.send('API rodando')
+})
+
+app.use('/api', routes);
 
 (async () => {
-
-    try {
-        await pgtools.createdb({
-            user: 'postgres',
-            password: config.password,
-            port: 5432,
-            host: 'localhost'
-        }, 'trabalho-transportadora')
-    } catch (e) {
-        if (e.message.indexOf("duplicate") === -1) {
-            console.log("CREATE DATABASE EXCEPTION: ", e);
-        }
+  try {
+    await pgtools.createdb({
+      user: 'postgres',
+      password: process.env.DB_PWD,
+      port: 5432,
+      host: 'localhost'
+    }, 'trabalho-transportadora')
+  } catch (e) {
+    if (e.message.indexOf('duplicate') === -1) {
+      console.log('CREATE DATABASE EXCEPTION: ', e)
     }
-    
-    // checamos se as tabelas necessárias já foram criadas
-    checkTables();
-    
-    const PORT = 3000;
-    
-    app.listen(PORT, () => {
-        console.log(`server is running on PORT ${PORT}`)
-    })
+  }
 
+  // checamos se as tabelas necessárias já foram criadas
+  checkTables()
+
+  const PORT = 3000
+
+  app.listen(PORT, () => {
+    console.log(`server is running on PORT ${PORT}`)
+  })
 })()
-
-
