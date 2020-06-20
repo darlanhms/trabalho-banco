@@ -6,8 +6,17 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+.title-section {
+  font-size: 28px;
+  margin: 15px 0px;
+}
+.headerButtons {
+  margin: 0px 0px 10px 0px
+}
+.headerButtons .btn {
+ margin: 0px 2px;
 }

@@ -66,6 +66,9 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: "#e2e2e2"
     }
   },
+  tableCell: {
+    textAlign: "center",
+  },
   visuallyHidden: {
     border: 0,
     clip: 'rect(0 0 0 0)',
@@ -81,7 +84,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface row {
-    id: string;
+    id: number;
     [propName: string]: any;
 }
 
@@ -106,7 +109,7 @@ const EnhancedTable:React.FC<tableProps> = ({ rows, selected, setSelected, headC
     setSelected([]);
   };
 
-  const handleClick = (event:any, id:string) => {
+  const handleClick = (event:any, id:number) => {
     const selectedIndex = selected.indexOf(id);
     let newSelected:any[] = [];
 
@@ -135,12 +138,12 @@ const EnhancedTable:React.FC<tableProps> = ({ rows, selected, setSelected, headC
     setPage(0);
   };
 
-  const generateTableCells = (row: row) => {
+  const generateTableCells = (row: row, classes: any) => {
     return (
       <>
       {headCells.map((head, index) => {
         if (row[head.id]) {
-          return <TableCell key={index}>{row[head.id]}</TableCell>
+          return <TableCell className={classes} key={index}>{row[head.id]}</TableCell>
         } else {
           return <TableCell></TableCell>
         }
@@ -149,7 +152,7 @@ const EnhancedTable:React.FC<tableProps> = ({ rows, selected, setSelected, headC
     )
   }
 
-  const isSelected = (id:string) => selected.indexOf(id) !== -1;
+  const isSelected = (id:number) => selected.indexOf(id) !== -1;
 
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
@@ -193,7 +196,7 @@ const EnhancedTable:React.FC<tableProps> = ({ rows, selected, setSelected, headC
                           inputProps={{ 'aria-labelledby': labelId }}
                         />
                       </TableCell>
-                      {generateTableCells(row)}
+                      {generateTableCells(row, classes.tableCell)}
                     </TableRow>
                   );
                 })}
