@@ -34,13 +34,13 @@ export const checkTables = async () => {
     try {
         await pool.query(`
             CREATE TABLE IF NOT EXISTS endereco_carga (
-                id INT NOT NULL AUTO_INCREMENT,
+                id SERIAL PRIMARY KEY NOT NULL,
                 logradouro VARCHAR(50),
                 numero INT,
                 bairro VARCHAR(50),
                 cidade VARCHAR(50),
-                estado VARCHAR(2)
-                PRIMARY KEY(id),
+                estado VARCHAR(2),
+                PRIMARY KEY(id)
             )
         `)
     } catch (exc) {
@@ -50,7 +50,7 @@ export const checkTables = async () => {
     try {
         await pool.query(`
             CREATE TABLE IF NOT EXISTS carga (
-                id INT NOT NULL AUTO_INCREMENT,
+                id SERIAL PRIMARY KEY NOT NULL,
                 id_endereco_carga INT NOT NULL,
                 id_cliente INT NOT NULL,
                 data_entrada VARCHAR(8),
@@ -58,10 +58,10 @@ export const checkTables = async () => {
                 peso VARCHAR(50),
                 largura VARCHAR(50),
                 altura VARCHAR(50),
-                comprimento VARCHAR(50)
-                status VARCHAR(1)
+                comprimento VARCHAR(50),
+                status VARCHAR(1),
                 PRIMARY KEY(id),
-                CONSTRAINT fk_endereco_carga FOREIGN KEY (id_endereco_carga) REFERENCES endereco_carga (id)
+                CONSTRAINT fk_endereco_carga FOREIGN KEY (id_endereco_carga) REFERENCES endereco_carga (id),
                 CONSTRAINT fk_cliente_carga FOREIGN KEY (id_cliente) REFERENCES cliente (id)
             )
         `)
