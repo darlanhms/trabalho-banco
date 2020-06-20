@@ -5,6 +5,7 @@ import api from '../../services/api';
 import { handleType } from '../../Utils/types';
 import Modal from '../../Components/Modal';
 import Form from '../../Components/Form';
+import { tratObjCliente } from '../../Utils/utils'
 
 interface IEndereco {
     logradouro: string;
@@ -31,17 +32,7 @@ const Clientes:React.FC = () => {
     useEffect(() => {
         api.get("cliente")
         .then(clientes => {
-            clientes.data.map((cliente: any) => {
-                const { logradouro, cidade, estado, bairro, numero } = cliente;
-                cliente.endereco = {
-                    logradouro,
-                    cidade,
-                    estado,
-                    bairro,
-                    numero
-                }
-                return cliente;
-            })
+            clientes.data.map((cliente: any) => tratObjCliente(cliente))
             setClientes(clientes.data);
         }).catch(err => {
             console.log("Erro ao buscar clientes: ", err);
@@ -91,6 +82,25 @@ const Clientes:React.FC = () => {
                 } else {
                     alert("Selecione um para editar.")
                 }
+                break;
+            default:
+                break;
+        }
+    }
+
+    const handleSubmit = () => {
+        switch (type) {
+            case "Incluir":
+                api.post("/cliente", objSelected)
+                .then(res => {
+                    console.log(tratObjCliente(res.data));
+                    
+                    setClientes([...clientes, tratObjCliente(res.data)]);
+                    setShow(false);
+                }).catch(err => {
+                    console.log(err);
+                    alert("Erro ao cadastrar cliente, tente novamente.")
+                });
                 break;
             default:
                 break;
@@ -177,7 +187,7 @@ const Clientes:React.FC = () => {
                         inputs={inputs}
                     />
                 }
-                handleSubmit={() => {}}
+                handleSubmit={handleSubmit}
             />
         </div>
     )
