@@ -20,7 +20,7 @@ Com o yarn:
 
 **Para o trabalho utilizamos o banco de dados do postgres padrão que é criado, a database para a aplicação é criada quando o servidor é executado, então a unica dependencia necessária é informar a senha do banco geral**
 
-O metódo utilizado foi as variáveis de ambiente do node, então:
+O metódo utilizado foram as variáveis de ambiente do node, então:
 
 - Crie um arquivo chamado `.env` na pasta do backend
 - Dentro do arquivo insira uma variável `DB_PWD=SENHA` onde `SENHA` é a senha do banco de dados local
