@@ -24,7 +24,7 @@
     "react-icons": "^3.10.0",
     "react-navigation": "3.0.0",
     "react-router-dom": "5.0.1",
-    "react-scripts": "3.4.1",
+    "react-scripts": "^3.4.1",
     "typescript": "~3.7.2"
   },
   "scripts": {
