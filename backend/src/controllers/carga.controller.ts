@@ -40,10 +40,10 @@ export const createCarga = async (req:Req, res:Res) => {
 
 export const findCarga = async (req:Req, res:Res) => {
   pool.query(`
-        SELECT * 
-            FROM carga c, enderecoCarga e 
-            WHERE c.id = e.carga_id 
-    `)
+SELECT * 
+FROM carga c, enderecoCarga e 
+WHERE c.id = e.carga_id 
+`)
     .then(carga => {
       return res.send(carga.rows)
     }).catch(err => {

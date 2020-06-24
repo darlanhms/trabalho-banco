@@ -16,7 +16,7 @@ export const checkTables = async () => {
 
   try {
     await pool.query(`
-            CREATE TABLE IF NOT EXISTS endereco (
+            CREATE TABLE IF NOT EXISTS enderecoCliente (
                 clienteId int NOT NULL,
                 logradouro VARCHAR(30) NOT NULL,
                 cidade VARCHAR(30) NOT NULL,
@@ -28,7 +28,7 @@ export const checkTables = async () => {
             )
         `)
   } catch (exc) {
-    console.log('Create table endereco exception: ', exc)
+    console.log('Create table endereco_cliente exception: ', exc)
   }
 
   try {
