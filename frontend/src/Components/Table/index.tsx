@@ -145,7 +145,7 @@ const EnhancedTable:React.FC<tableProps> = ({ rows, selected, setSelected, headC
         if (row[head.id]) {
           return <TableCell className={classes} key={index}>{row[head.id]}</TableCell>
         } else {
-          return <TableCell></TableCell>
+          return <TableCell key={index}></TableCell>
         }
       })}
       </>

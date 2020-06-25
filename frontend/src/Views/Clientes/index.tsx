@@ -41,12 +41,27 @@ const Clientes:React.FC = () => {
 
     const headCells = [
         { id: "nome", label: "Nome" },
+        { id: "email", label: "Email" },
         { id: "telefone", label: "Telefone" },
         { id: "cidade", label: "Cidade" },
         { id: "logradouro", label: "Logradouro" },
-    ]
+    ]    
 
-    const rows = clientes;
+    const rows:any[] = [];
+    
+    clientes.forEach(cliente => {
+        let newCliente:any = {...cliente}
+
+        if (newCliente.endereco) {
+            newCliente.cidade = newCliente.endereco.cidade;
+            newCliente.estado = newCliente.endereco.estado;
+            newCliente.logradouro = newCliente.endereco.logradouro;
+            newCliente.bairro = newCliente.endereco.bairro;
+            newCliente.numero = newCliente.endereco.numero;
+        }
+
+        rows.push(newCliente);
+    });
 
     const handlePress = (type: handleType):void => {
         switch (type) {
@@ -93,14 +108,38 @@ const Clientes:React.FC = () => {
             case "Incluir":
                 api.post("/cliente", objSelected)
                 .then(res => {
-                    console.log(tratObjCliente(res.data));
-                    
                     setClientes([...clientes, tratObjCliente(res.data)]);
                     setShow(false);
+                    setObjSelected({});
+                    setSelected([]);
                 }).catch(err => {
                     console.log(err);
                     alert("Erro ao cadastrar cliente, tente novamente.")
                 });
+                break;
+            case "Editar":
+                api.patch("/cliente/" + (objSelected as ICliente).id, objSelected)
+                .then(cliente => {
+                    setClientes([...clientes.filter(a => a.id !== (objSelected as ICliente).id), cliente.data]);
+                    setShow(false);
+                    setObjSelected({});
+                    setSelected([]);
+                }).catch(err => {
+                    console.log(err);
+                    alert("Não foi possível excluir o cliente");
+                });
+                break;
+            case "Excluir":
+                api.delete("/cliente/" + (objSelected as ICliente).id)
+                .then(deleted => {
+                    setClientes([...clientes.filter(a => a.id !== (objSelected as ICliente).id)]);
+                    setShow(false);
+                    setObjSelected({});
+                    setSelected([]);
+                }).catch(err => {
+                    console.log(err);
+                    alert("Não foi possível excluir o cliente");
+                })
                 break;
             default:
                 break;
@@ -124,6 +163,7 @@ const Clientes:React.FC = () => {
         {
             controlId: "formTelefoneCliente",
             label: "Telefone",
+            type: "number",
             value: selectedAsCliente.telefone,
             onChange: (e: React.ChangeEvent<any>) => setObjSelected({...objSelected, telefone: e.target.value }),
         },
@@ -154,6 +194,7 @@ const Clientes:React.FC = () => {
         {
             controlId: "formNumeroCliente",
             label: "Número",
+            type: "number",
             value: selectedAsCliente.endereco ? selectedAsCliente.endereco.numero : "",
             onChange: (e: React.ChangeEvent<any>) => setObjSelected({...selectedAsCliente, endereco: { ...(selectedAsCliente.endereco || {}), numero: e.target.value } }),
         },
