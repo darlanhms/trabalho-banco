@@ -95,13 +95,15 @@ const Clientes:React.FC = () => {
                         alert("Não foi possível encontrar o cliente")
                     }
                 } else {
-                    alert("Selecione um para editar.")
+                    alert("Selecione um para excluir.")
                 }
                 break;
             default:
                 break;
         }
     }
+
+    
 
     const handleSubmit = () => {
         switch (type) {

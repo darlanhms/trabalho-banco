@@ -1,6 +1,23 @@
 import pool from './connection'
+import pgtools from 'pgtools'
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 export const checkTables = async () => {
+  try {
+    await pgtools.createdb({
+      user: 'postgres',
+      password: process.env.DB_PWD,
+      port: 5432,
+      host: 'localhost'
+    }, 'transportadora')
+  } catch (e) {
+    if (e.message.indexOf('duplicate') === -1) {
+      console.log('CREATE DATABASE EXCEPTION: ', e)
+    }
+  }
+
   try {
     await pool.query(`
             CREATE TABLE IF NOT EXISTS cliente (
@@ -22,7 +39,7 @@ export const checkTables = async () => {
                 cidade VARCHAR(30) NOT NULL,
                 estado VARCHAR(30) NOT NULL,
                 bairro VARCHAR(30),
-                numero INT,
+                numero VARCHAR(11),
                 PRIMARY KEY (clienteId),
                 CONSTRAINT fk_cliente_id FOREIGN KEY (clienteId) REFERENCES cliente (id)
             )
@@ -35,14 +52,14 @@ export const checkTables = async () => {
     await pool.query(`
             CREATE TABLE IF NOT EXISTS carga (
                 id SERIAL PRIMARY KEY NOT NULL,
-                clienteId int NOT NULL,
+                clienteId INT NOT NULL,
                 dataEntrada VARCHAR(8),
                 dataEntrega VARCHAR(8),
-                peso VARCHAR(50),
-                largura VARCHAR(50),
-                altura VARCHAR(50),
-                comprimento VARCHAR(50),
-                status VARCHAR(1),
+                peso VARCHAR(20),
+                largura VARCHAR(20),
+                altura VARCHAR(20),
+                comprimento VARCHAR(20),
+                status INT,
                 CONSTRAINT fk_cliente_id FOREIGN KEY (clienteId) REFERENCES cliente (id)
             )
         `)
@@ -55,7 +72,7 @@ export const checkTables = async () => {
             CREATE TABLE IF NOT EXISTS enderecoCarga (
                 cargaId int NOT NULL,
                 logradouro VARCHAR(50),
-                numero INT,
+                numero VARCHAR(11),
                 bairro VARCHAR(50),
                 cidade VARCHAR(50),
                 estado VARCHAR(2),
