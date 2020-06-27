@@ -1,1 +1,1 @@
-export type handleType = "Incluir" | "Editar" | "Excluir";
+export type handleType = 'Incluir' | 'Editar' | 'Excluir';
