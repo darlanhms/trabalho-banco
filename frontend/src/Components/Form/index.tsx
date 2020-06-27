@@ -10,6 +10,7 @@ interface input {
     type?: string;
     onChange: ((event: React.ChangeEvent<any>) => void);
     options?: selectOption[];
+    placeholder?: string;
     label: string;
     controlId: string;
     value: any;
