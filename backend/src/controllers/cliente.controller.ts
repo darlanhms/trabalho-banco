@@ -60,7 +60,7 @@ export const updateCliente = async (req:Req, res: Res) => {
         if (cliente.rows && cliente.rows[0] && cliente.rows[0].id) {
           pool.query(
             'UPDATE enderecoCliente SET (cidade, estado, logradouro, bairro, numero) = ($2::text, $3::text, $4::text, $5::text, $6::int) WHERE clienteId = $1 RETURNING *',
-            [id, cidade, estado, logradouro, bairro, numero]
+            [parseInt(id), cidade, estado, logradouro, bairro, numero]
           ).then(enderecoCliente => {
             // vaidacao pra checar se recebemos alguma resposta do banco
             if (enderecoCliente && enderecoCliente.rows[0]) {

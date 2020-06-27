@@ -35,11 +35,11 @@ export const checkTables = async () => {
     await pool.query(`
             CREATE TABLE IF NOT EXISTS enderecoCliente (
                 clienteId int NOT NULL,
-                logradouro VARCHAR(30) NOT NULL,
-                cidade VARCHAR(30) NOT NULL,
-                estado VARCHAR(30) NOT NULL,
-                bairro VARCHAR(30),
+                logradouro VARCHAR(50),
                 numero VARCHAR(11),
+                bairro VARCHAR(50),
+                cidade VARCHAR(50),
+                estado VARCHAR(2),
                 PRIMARY KEY (clienteId),
                 CONSTRAINT fk_cliente_id FOREIGN KEY (clienteId) REFERENCES cliente (id)
             )
