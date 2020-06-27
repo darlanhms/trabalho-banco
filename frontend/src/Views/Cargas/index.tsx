@@ -84,7 +84,7 @@ const Cargas:React.FC = () => {
   const handleSubmit = () => {
     switch (type) {
       case 'Incluir':
-        (objSelected as ICarga).dataentrada = moment().format('DDMMYYYY')
+        (objSelected as ICarga).dataentrada = moment().format('DD/MM/YYYY')
         api.post('/carga', objSelected)
           .then(res => {
             setCargas([...cargas, tratObjCliente(res.data)])

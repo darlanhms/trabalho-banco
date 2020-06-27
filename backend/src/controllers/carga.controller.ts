@@ -51,11 +51,10 @@ export const createCarga = async (req:Req, res:Res) => {
 
 export const findCarga = async (req:Req, res:Res) => {
   pool.query(`
-    SELECT * 
-    FROM carga c
-    INNER JOIN
-      cliente ON c.clienteId = cliente.id
-    INNER JOIN enderecoCarga e ON c.id = e.cargaId
+    SELECT cg.*, en.*, cli.nome, cli.email, cli.telefone 
+    FROM carga cg 
+    INNER JOIN cliente cli ON cg.clienteid = cli.id 
+    INNER JOIN enderecoCarga en ON en.cargaid = cg.id
   `).then(carga => {
     return res.send(treatRows(carga))
   }).catch(err => {
