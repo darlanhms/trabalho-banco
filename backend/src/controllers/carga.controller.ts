@@ -68,8 +68,6 @@ export const updateCarga = async (req:Req, res:Res) => {
   const { dataentrada, dataentrega, peso, largura, altura, comprimento, status, endereco, clienteid } = req.body
   const { logradouro, numero, bairro, cidade, estado } = endereco
 
-  console.log(clienteid)
-
   if (dataentrada && dataentrega && status && cidade && estado && logradouro && clienteid) {
     pool.query('UPDATE carga SET (dataentrada, dataentrega, peso, largura, altura, comprimento, status, clienteId) = ($1::text, $2::text, $3::text, $4::text, $5::text, $6::text, $7::int, $8::int) WHERE id = $9::int RETURNING *',
       [dataentrada, dataentrega, peso, largura, altura, comprimento, status, parseInt(clienteid), parseInt(id)])
@@ -112,6 +110,24 @@ export const updateCarga = async (req:Req, res:Res) => {
   } else {
     return res.status(422).send('Faltou informar campos.')
   }
+}
+
+export const deleteCarga = async (req:Req, res:Res) => {
+  const { id } = req.params
+
+  pool.query('DELETE FROM enderecoCarga WHERE cargaId = $1', [parseInt(id)])
+    .then(deleted => {
+      pool.query('DELETE FROM carga WHERE id = $1', [parseInt(id)])
+        .then(deleted => {
+          return res.send('ok')
+        }).catch(err => {
+          console.log('Erro ao deletar carga: ', err)
+          return res.status(500).send(err)
+        })
+    }).catch(err => {
+      console.log('Erro ao deletar endereço: ', err)
+      return res.status(500).send(err)
+    })
 }
 
 function treatRows (carga: any) {

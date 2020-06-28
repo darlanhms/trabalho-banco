@@ -9,8 +9,8 @@ export interface IEndereco {
 export interface ICarga {
     id: number;
     clienteid: number;
-    dataentrega: string;
-    dataentrada: string;
+    dataentrega: string | number;
+    dataentrada: string | number;
     tamanho: string;
     peso: string;
     largura: string;

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Button } from 'react-bootstrap'
 import moment from 'moment'
+import { parseISO } from 'date-fns'
 import api from '../../services/api'
 import Modal from '../../Components/Modal'
 import Form from '../../Components/Form'
@@ -17,14 +18,15 @@ const Cargas:React.FC = () => {
   const [show, setShow] = useState<boolean>(false)
   const [type, setType] = useState<handleType | string>('')
 
+  type statusCarga = 0 | 1 | 2 | 3;
   const selectedAsCarga = (objSelected as ICarga)
 
   useEffect(() => {
     api.get('carga')
       .then(cargas => {
-        console.log(cargas.data)
-        // cargas.data.map((carga: any) => tratObjCliente(carga))
-        setCargas(cargas.data)
+        if (cargas.data) {
+          setCargas(cargas.data)
+        }
 
         api.get('cliente')
           .then(clientes => {
@@ -41,7 +43,7 @@ const Cargas:React.FC = () => {
     switch (type) {
       case 'Incluir':
         if (clientes.length) {
-          setObjSelected({ ...selectedAsCarga, clienteid: clientes[0].id, status: 2 })
+          setObjSelected({ ...selectedAsCarga, clienteid: clientes[0].id, status: 2, dataentrada: Date.now() })
         } else {
           setObjSelected({ status: 2 })
         }
@@ -50,7 +52,10 @@ const Cargas:React.FC = () => {
         break
       case 'Editar':
         if (selected && selected.length === 1) {
-          const carga = cargas.find(a => a.id === selected[0])
+          const carga: any = { ...cargas.find(a => a.id === selected[0]) }
+          carga.dataentrega = parseISO(moment(parseInt(carga.dataentrega)).format())
+          carga.dataentrada = parseISO(moment(parseInt(carga.dataentrada)).format())
+
           if (carga) {
             setObjSelected(carga)
             setType(type)
@@ -82,10 +87,13 @@ const Cargas:React.FC = () => {
   }
 
   const handleSubmit = () => {
+    const carga = { ...selectedAsCarga }
+
     switch (type) {
       case 'Incluir':
-        (objSelected as ICarga).dataentrada = moment().format('DD/MM/YYYY')
-        api.post('/carga', objSelected)
+        carga.dataentrega = moment(carga.dataentrega).format('x')
+        carga.dataentrada = moment().format('x')
+        api.post('/carga', carga)
           .then(res => {
             setCargas([...cargas, tratObjCliente(res.data)])
             setShow(false)
@@ -97,7 +105,9 @@ const Cargas:React.FC = () => {
           })
         break
       case 'Editar':
-        api.patch('/carga/' + (objSelected as ICarga).id, objSelected)
+        carga.dataentrega = moment(carga.dataentrega).format('x')
+        carga.dataentrada = moment(carga.dataentrada).format('x')
+        api.patch('/carga/' + carga.id, carga)
           .then(carga => {
             setCargas([...cargas.filter(a => a.id !== (objSelected as ICarga).id), { ...objSelected, ...carga.data }])
             setShow(false)
@@ -105,7 +115,7 @@ const Cargas:React.FC = () => {
             setSelected([])
           }).catch(err => {
             console.log(err)
-            alert('Não foi possível excluir o cliente')
+            alert('Não foi possível alterar a carga')
           })
         break
       case 'Excluir':
@@ -117,7 +127,7 @@ const Cargas:React.FC = () => {
             setSelected([])
           }).catch(err => {
             console.log(err)
-            alert('Não foi possível excluir o cliente')
+            alert('Não foi possível excluir a carga')
           })
         break
       default:
@@ -137,7 +147,7 @@ const Cargas:React.FC = () => {
     {
       controlId: 'formStatusCarga',
       label: 'Status',
-      value: selectedAsCarga.status || 0,
+      value: selectedAsCarga.status,
       type: 'select',
       options: [
         { label: 'Em processamento', value: 2 },
@@ -145,14 +155,15 @@ const Cargas:React.FC = () => {
         { label: 'Em transporte', value: 3 },
         { label: 'Entregue', value: 1 }
       ],
-      onChange: (e: React.ChangeEvent<any>) => setObjSelected({ ...selectedAsCarga, idCliente: parseInt(e.target.value) })
+      onChange: (e: React.ChangeEvent<any>) => setObjSelected({ ...selectedAsCarga, status: (parseInt(e.target.value) as statusCarga) })
     },
     {
       controlId: 'formDataEntregaCarga',
       label: 'Data de entrega',
+      placeholder: 'DD/MM/YYYY',
       type: 'date',
       value: selectedAsCarga.dataentrega || '',
-      onChange: (e: React.ChangeEvent<any>) => setObjSelected({ ...selectedAsCarga, dataentrega: e.target.value })
+      onChangeDate: (date: any) => setObjSelected({ ...selectedAsCarga, dataentrega: date })
     },
     {
       controlId: 'formPesoCarga',
@@ -217,6 +228,31 @@ const Cargas:React.FC = () => {
     if (newCarga.cliente && newCarga.cliente.nome) {
       newCarga.cliente = newCarga.cliente.nome
     }
+    if (newCarga.status || newCarga.status === 0) {
+      switch (newCarga.status) {
+        case 0:
+          newCarga.status = 'Cancelado'
+          break
+        case 1:
+          newCarga.status = 'Entregue'
+          break
+        case 2:
+          newCarga.status = 'Em processamento'
+          break
+        case 3:
+          newCarga.status = 'Em transporte'
+          break
+        default:
+          newCarga.status = 'Outros'
+          break
+      }
+    }
+    if (newCarga.dataentrada) {
+      newCarga.dataentrada = moment(parseInt(newCarga.dataentrada)).format('DD/MM/YYYY')
+    }
+    if (newCarga.dataentrega) {
+      newCarga.dataentrega = moment(parseInt(newCarga.dataentrega)).format('DD/MM/YYYY')
+    }
     if (newCarga.endereco) {
       const { cidade, estado, logradouro, numero } = newCarga.endereco
       newCarga.endereco = `${logradouro}, ${numero} - ${cidade} (${estado})`
@@ -226,6 +262,7 @@ const Cargas:React.FC = () => {
 
   const headCells = [
     { id: 'cliente', label: 'Cliente' },
+    { id: 'status', label: 'Status' },
     { id: 'dataentrada', label: 'Data de entrada' },
     { id: 'dataentrega', label: 'Data de entrega' },
     { id: 'peso', label: 'Peso' },
