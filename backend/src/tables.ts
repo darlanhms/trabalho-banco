@@ -53,8 +53,8 @@ export const checkTables = async () => {
             CREATE TABLE IF NOT EXISTS carga (
                 id SERIAL PRIMARY KEY NOT NULL,
                 clienteId INT NOT NULL,
-                dataEntrada VARCHAR(8),
-                dataEntrega VARCHAR(8),
+                dataEntrada VARCHAR(10),
+                dataEntrega VARCHAR(10),
                 peso VARCHAR(20),
                 largura VARCHAR(20),
                 altura VARCHAR(20),
