@@ -5,7 +5,7 @@ export const createCliente = async (req:Req, res:Res) => {
   const { nome, email, telefone, endereco } = req.body
   const { logradouro, numero, bairro, cidade, estado } = endereco
 
-  if (nome && email && telefone && cidade && estado && logradouro) {
+  if (nome) {
     pool.query('INSERT INTO cliente(nome, email, telefone) VALUES ($1::text, $2::text, $3::text) RETURNING *', [nome, email, telefone])
       .then(cliente => {
         // vaidacao pra checar se recebemos alguma resposta do banco
@@ -37,12 +37,12 @@ export const createCliente = async (req:Req, res:Res) => {
 
 export const findClientes = async (req:Req, res:Res) => {
   pool.query(`
-        SELECT * 
-            FROM cliente c, enderecoCliente e 
-            WHERE c.id = e.clienteId 
+        SELECT *  
+        FROM cliente c
+        INNER JOIN enderecoCliente en ON en.clienteId = c.id
     `)
     .then(clientes => {
-      return res.send(clientes.rows)
+      return res.send(treatRows(clientes))
     }).catch(err => {
       return res.status(500).send(err)
     })
@@ -53,7 +53,7 @@ export const updateCliente = async (req:Req, res: Res) => {
   const { nome, email, telefone, endereco } = req.body
   const { logradouro, numero, bairro, cidade, estado } = endereco
 
-  if (id && nome && email && telefone && cidade && estado && logradouro) {
+  if (id && nome) {
     pool.query('UPDATE cliente SET (nome, email, telefone) = ($1::text, $2::text, $3::text) WHERE id = $4::int RETURNING *', [nome, email, telefone, parseInt(id)])
       .then(cliente => {
         // vaidacao pra checar se recebemos alguma resposta do banco
@@ -99,5 +99,29 @@ export const deleteCliente = async (req:Req, res: Res) => {
       })
   } else {
     return res.status(422).send('ID não informado')
+  }
+}
+
+function treatRows (cliente: any) {
+  if (cliente.rows && Array.isArray(cliente.rows) && cliente.rows.length) {
+    return cliente.rows.map((cliente:any) => {
+      if (!cliente.endereco) {
+        cliente.endereco = {
+          logradouro: cliente.logradouro,
+          cidade: cliente.cidade,
+          estado: cliente.estado,
+          bairro: cliente.bairro,
+          numero: cliente.numero
+        }
+      }
+
+      delete cliente.cidade
+      delete cliente.estado
+      delete cliente.bairro
+      delete cliente.numero
+      delete cliente.logradouro
+
+      return cliente
+    })
   }
 }

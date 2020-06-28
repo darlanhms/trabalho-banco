@@ -5,7 +5,7 @@ export const createCarga = async (req:Req, res:Res) => {
   const { dataentrada, dataentrega, peso, largura, altura, comprimento, status, endereco, clienteid } = req.body
   const { logradouro, numero, bairro, cidade, estado } = endereco
 
-  if (dataentrada && dataentrega && peso && largura && altura && comprimento && status && cidade && estado && logradouro) {
+  if (clienteid) {
     pool.query('INSERT INTO carga(dataEntrada, dataEntrega, peso, largura, altura, comprimento, status, clienteId) VALUES ($1::text, $2::text, $3::text, $4::text, $5::text, $6::text, $7::int, $8::int) RETURNING *',
       [dataentrada, dataentrega, peso, largura, altura, comprimento, parseInt(status), parseInt(clienteid)])
       .then(carga => {
@@ -68,7 +68,7 @@ export const updateCarga = async (req:Req, res:Res) => {
   const { dataentrada, dataentrega, peso, largura, altura, comprimento, status, endereco, clienteid } = req.body
   const { logradouro, numero, bairro, cidade, estado } = endereco
 
-  if (dataentrada && dataentrega && status && cidade && estado && logradouro && clienteid) {
+  if (clienteid) {
     pool.query('UPDATE carga SET (dataentrada, dataentrega, peso, largura, altura, comprimento, status, clienteId) = ($1::text, $2::text, $3::text, $4::text, $5::text, $6::text, $7::int, $8::int) WHERE id = $9::int RETURNING *',
       [dataentrada, dataentrega, peso, largura, altura, comprimento, status, parseInt(clienteid), parseInt(id)])
       .then(carga => {

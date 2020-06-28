@@ -7,7 +7,6 @@ import Modal from '../../Components/Modal'
 import Form from '../../Components/Form'
 import Table from '../../Components/Table'
 import { handleType } from '../../Utils/types'
-import { tratObjCliente } from '../../Utils/utils'
 import { ICarga, IClienteMin } from '../../Utils/interfaces'
 
 const Cargas:React.FC = () => {
@@ -43,7 +42,7 @@ const Cargas:React.FC = () => {
     switch (type) {
       case 'Incluir':
         if (clientes.length) {
-          setObjSelected({ ...selectedAsCarga, clienteid: clientes[0].id, status: 2, dataentrada: Date.now() })
+          setObjSelected({ clienteid: clientes[0].id, status: 2, dataentrada: Date.now() })
         } else {
           setObjSelected({ status: 2 })
         }
@@ -86,37 +85,60 @@ const Cargas:React.FC = () => {
     }
   }
 
+  const validarCarga = ():boolean => {
+    if (selectedAsCarga.endereco) {
+      var { clienteid } = selectedAsCarga
+      var { estado } = selectedAsCarga.endereco
+      if (!estado || estado.length !== 2) {
+        alert('Estado inválido - exemplo (SC, RS, PA)')
+        return false
+      }
+      if (!clienteid) {
+        alert('Selecione um cliente para a carga')
+        return false
+      }
+    } else {
+      alert('Informe um endereco válido')
+      return false
+    }
+    return true
+  }
+
   const handleSubmit = () => {
     const carga = { ...selectedAsCarga }
 
     switch (type) {
       case 'Incluir':
-        carga.dataentrega = moment(carga.dataentrega).format('x')
-        carga.dataentrada = moment().format('x')
-        api.post('/carga', carga)
-          .then(res => {
-            setCargas([...cargas, tratObjCliente(res.data)])
-            setShow(false)
-            setObjSelected({})
-            setSelected([])
-          }).catch(err => {
-            console.log(err)
-            alert('Erro ao cadastrar cliente, tente novamente.')
-          })
+        if (validarCarga()) {
+          carga.dataentrega = moment(carga.dataentrega).format('x')
+          carga.dataentrada = moment().format('x')
+          api.post('/carga', carga)
+            .then(res => {
+              setCargas([...cargas, res.data])
+              setShow(false)
+              setObjSelected({})
+              setSelected([])
+            }).catch(err => {
+              console.log(err)
+              alert('Erro ao cadastrar cliente, tente novamente.')
+            })
+        }
         break
       case 'Editar':
-        carga.dataentrega = moment(carga.dataentrega).format('x')
-        carga.dataentrada = moment(carga.dataentrada).format('x')
-        api.patch('/carga/' + carga.id, carga)
-          .then(carga => {
-            setCargas([...cargas.filter(a => a.id !== (objSelected as ICarga).id), { ...objSelected, ...carga.data }])
-            setShow(false)
-            setObjSelected({})
-            setSelected([])
-          }).catch(err => {
-            console.log(err)
-            alert('Não foi possível alterar a carga')
-          })
+        if (validarCarga()) {
+          carga.dataentrega = moment(carga.dataentrega).format('x')
+          carga.dataentrada = moment(carga.dataentrada).format('x')
+          api.patch('/carga/' + carga.id, carga)
+            .then(carga => {
+              setCargas([...cargas.filter(a => a.id !== (objSelected as ICarga).id), { ...objSelected, ...carga.data }])
+              setShow(false)
+              setObjSelected({})
+              setSelected([])
+            }).catch(err => {
+              console.log(err)
+              alert('Não foi possível alterar a carga')
+            })
+        }
         break
       case 'Excluir':
         api.delete('/carga/' + (objSelected as ICarga).id)
@@ -293,7 +315,7 @@ const Cargas:React.FC = () => {
         body={
           type === 'Excluir'
             ? <div>
-                    Você tem certeza que deseja excluir a carga <b>{selectedAsCarga.dataentrada}</b>?
+                    Você tem certeza que deseja excluir esta carga do dia <b>{moment(parseInt(selectedAsCarga.dataentrada as string)).format('DD/MM/YYYY')}</b>?
             </div>
             : <Form
               inputs={inputs}
