@@ -190,7 +190,7 @@ const Clientes:React.FC = () => {
     },
     {
       controlId: 'formEstadoCliente',
-      label: 'Estado',
+      label: 'UF',
       value: selectedAsCliente.endereco ? selectedAsCliente.endereco.estado : '',
       onChange: (e: React.ChangeEvent<any>) => setObjSelected({ ...selectedAsCliente, endereco: { ...(selectedAsCliente.endereco || {}), estado: e.target.value } })
     },

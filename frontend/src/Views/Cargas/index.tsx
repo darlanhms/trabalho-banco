@@ -225,7 +225,7 @@ const Cargas:React.FC = () => {
     },
     {
       controlId: 'formEstadoCliente',
-      label: 'Estado',
+      label: 'UF',
       value: selectedAsCarga.endereco ? selectedAsCarga.endereco.estado : '',
       onChange: (e: React.ChangeEvent<any>) => setObjSelected({ ...selectedAsCarga, endereco: { ...(selectedAsCarga.endereco || {}), estado: e.target.value } })
     },
