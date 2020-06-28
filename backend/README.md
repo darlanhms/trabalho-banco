@@ -6,7 +6,7 @@
 
 #### `Instalação módulos do node`
 
-Abra o terminal na pasta do frontend do projeto e execute o seguinte comando
+Abra o terminal na pasta do backend do projeto e execute o seguinte comando
 
 Com o npm: 
 
